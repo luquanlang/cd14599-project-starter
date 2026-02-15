@@ -28,11 +28,22 @@ def add_order_api():
 
 @app.route('/api/orders/<string:order_id>', methods=['GET'])
 def get_order_api(order_id):
-    pass
+    order = order_tracker.get_order_by_id(order_id)
+    if not order:
+        return jsonify({"error": "Order not found"}), 404
+    return jsonify(order), 200
 
 @app.route('/api/orders/<string:order_id>/status', methods=['PUT'])
 def update_order_status_api(order_id):
-    pass
+    data = request.get_json()
+    order_tracker.update_order_status(
+        order_id=order_id,
+        new_status=data['new_status']
+    )
+    order = order_tracker.get_order_by_id(order_id)
+    if not order:
+        return jsonify({"error": "Order not found"}), 404
+    return jsonify(order), 200
 
 @app.route('/api/orders', methods=['GET'])
 def list_orders_api():
